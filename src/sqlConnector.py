@@ -60,7 +60,7 @@ def updateNewsProfile(outputDict):
                     outputFalse.append((deviceId, outputDict[deviceId].output))
                     #cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
                 else:
-                    outputTrue.append((deviceId, outputDict[deviceId].output))
+                    outputTrue.append((outputDict[deviceId].output, deviceId))
                     #cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
             except Exception as ex:
                 template = "An exception of type {0} occurred. Arguments:\n{1!r}"
