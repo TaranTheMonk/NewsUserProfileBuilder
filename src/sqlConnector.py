@@ -37,5 +37,18 @@ def getCurrentNewsProfile():
         currentNewsProfile.update({deviceId: Profile})
     return currentNewsProfile
 
-def updateNewsProfile():
-    print('Update successfully')
+def updateNewsProfile(outputDict):
+    currentNewsProfile = dict()
+    conn = mysql.connector.connect(host='hsdb.cd29ypfepkmi.ap-southeast-1.rds.amazonaws.com',
+                               user='HSDBADMIN', password='NestiaHSPWD', database='recommend_system')
+    cursor = conn.cursor()
+    for deviceId in outputDict.keys():
+        if outputDict[deviceId].existInDB == False:
+            cursor.execute('insert into user_data(device_id, newsProfile) values (%s, %s)'
+                           % (deviceId, outputDict[deviceId].output))
+        else:
+            cursor.execute('update user_data set newsProfile = %s where device_id = %s'
+                           % (outputDict[deviceId].output, deviceId))
+    conn.commit()
+    cursor.close()
+    conn.close()
