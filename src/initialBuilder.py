@@ -6,13 +6,32 @@ from src import sqlConnector
 import os
 import csv
 import re
+import numpy as np
+import json
 
-class UserProfileVector():
-    def __init__(self, deviceId):
+class UserProfile():
+    def __init__(self, deviceId, currentProfile):
         self.deviceId = deviceId
-        self.vector = None
-        self.appActiveDay = 0
-        self.newsActiveDay = 0
+        self.vector, self.newsActiveDay, self.appActiveDay = self.initializeProfile(currentProfile)
+        self.newsTypeHistory = list()
+
+    def initializeProfile(self, currentProfile):
+        if currentProfile == None:
+            return np.array([0] * 28), 0, 0
+        else:
+            try:
+                profile = json.loads(currentProfile)
+                return profile['vector'], profile['newsActiveDay'], profile['appActiveDay']
+            except:
+                print('Wrong input:')
+                print('%s : %s' % (self.deviceId, currentProfile))
+                return np.array([0] * 28), 0, 0
+
+    def buildVector(self):
+        tempVector = np.array([0] * 28)
+        for newsType in self.newsTypeHistory:
+            tempVector[newsType - 1] += 1
+        self.vector += tempVector
 
 class ParameterError(Exception):
     def __str__(self):
@@ -36,11 +55,13 @@ def getSysArgs():
     return startDate, stopDate
 
 def newsInformationCatcher(row, newsIdTypeDict, outputDict):
-    if newsDetailPattern.search(row[1]):
-        newsId = int(row[1].split('/')[-1])
-        newsType = newsIdTypeDict[newsId]
-    if row[5]
-    return
+    newsId = int(row[1].split('/')[-1])
+    newsType = newsIdTypeDict[newsId]
+    if row[5] not in outputDict.keys():
+        ##[[vector], news active day, app active day]
+        outputDict.update({row[5]: UserProfile(row[5])})
+    if newsType != -1:
+        outputDict[row[5]].newsHistory.append(newsType)
 
 def dataProcessor(startDate, newsIdTypeDict, outputDict):
     with open(os.path.expanduser('~/nestia_logs_with_parameters/data-' + startDate + '.csv')
@@ -49,27 +70,46 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
         try:
             for row in reader:
                 if validIdPattern.search(row[5]):
-                    newsInformationCatcher(row, newsIdTypeDict, outputDict)
+                    appActiveSet.add(row[5])
+                    if newsDetailPattern.search(row[1]):
+                        newsActiveSet.add(row[5])
+                        newsInformationCatcher(row, newsIdTypeDict, outputDict)
         except:
             print('file %s, line %d' % (startDate, reader.line_num))
 
 def main():
-    #Set parameters, configs and output
-    global newsDetailPattern, validIdPattern
+    #Global variables
+    global newsDetailPattern, validIdPattern, newsActiveSet, appActiveSet
     newsDetailPattern = re.compile('/news/\d+$')
     validIdPattern = re.compile('[0-9A-Za-z/-]{36,36}|[0-9a-z]{12,16}')
+    newsActiveSet, appActiveSet = set()
+
+    #Set parameters, configs and output
     try:
         startDate, stopDate = getSysArgs()
     except:
         raise ParameterError()
     newsIdTypeDict = sqlConnector.newsDictCatcher()
+    currentNewsProfile = sqlConnector.getCurrentNewsProfile()
     outputDict = dict()
-
+    for deviceId in currentNewsProfile.keys():
+        outputDict.update({deviceId: UserProfile(deviceId, currentNewsProfile[deviceId])})
+    print('Essential parameters, configs and output built successfully')
 
     #Processing
     while startDate != stopDate:
+        newsActiveSet, appActiveSet = set()
         print('Processing: %s, stop at: %s' % (startDate, stopDate))
         dataProcessor(startDate, newsIdTypeDict, outputDict)
+        startDate = oneMoreDay(startDate)
+    print('Process Successfully')
+
+    #Buidling output
+    for deviceId in appActiveSet:
+        outputDict[deviceId].appActiveDay += 1
+
+    for deviceId in outputDict.keys():
+
     return
 
 if __name__ == '__main__':

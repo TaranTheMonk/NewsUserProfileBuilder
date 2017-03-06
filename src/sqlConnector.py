@@ -22,5 +22,20 @@ def newsDictCatcher():
     print('Get news dict successfully')
     return output
 
+def getCurrentNewsProfile():
+    currentNewsProfile = dict()
+    conn = mysql.connector.connect(host='hsdb.cd29ypfepkmi.ap-southeast-1.rds.amazonaws.com',
+                               user='HSDBADMIN', password='NestiaHSPWD', database='recommend_system')
+    cursor = conn.cursor()
+    cursor.execute('select device_id, newsProfile from user_data')
+    queryResult = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    for idProfilePair in queryResult:
+        deviceId = idProfilePair[0].decode('utf-8')
+        Profile = idProfilePair[1]
+        currentNewsProfile.update({deviceId: Profile})
+    return currentNewsProfile
+
 def updateNewsProfile():
     print('Update successfully')
