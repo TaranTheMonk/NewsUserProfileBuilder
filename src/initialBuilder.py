@@ -86,7 +86,10 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
                         newsInformationCatcher(row, newsIdTypeDict, outputDict)
                 if row[5] not in outputDict.keys():
                     outputDict.update({row[5]: UserProfile(row[5], None)})
-            except:
+            except Exception as ex:
+                template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+                message = template.format(type(ex).__name__, ex.args)
+                print(message)
                 print('file %s, line %d' % (startDate, reader.line_num))
 
 def main():
