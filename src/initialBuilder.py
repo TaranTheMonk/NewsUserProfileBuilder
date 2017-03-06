@@ -71,7 +71,7 @@ def newsInformationCatcher(row, newsIdTypeDict, outputDict):
         ##[[vector], news active day, app active day]
         outputDict.update({row[5]: UserProfile(row[5], None)})
     if newsType != -1:
-        outputDict[row[5]].newsHistory.append(newsType)
+        outputDict[row[5]].newsTypeHistory.append(newsType)
 
 def dataProcessor(startDate, newsIdTypeDict, outputDict):
     with open(os.path.expanduser('~/nestia_logs_with_parameters/data-' + startDate + '.csv')
