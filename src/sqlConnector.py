@@ -44,19 +44,24 @@ def getCurrentNewsProfile():
 
 def updateNewsProfile(outputDict):
     validIdPattern = re.compile('[0-9A-Za-z/-]{36,36}|[0-9a-z]{12,16}')
+    outputFalse = []
+    outputTrue = []
+
     outputLength = len(outputDict.keys())
     counter = 0
     conn = mysql.connector.connect(host='hsdb.cd29ypfepkmi.ap-southeast-1.rds.amazonaws.com',
                                user='HSDBADMIN', password='NestiaHSPWD', database='recommend_system')
     cursor = conn.cursor()
+
     for deviceId in outputDict.keys():
-        if validIdPattern.search(deviceId):
-            output = {'deviceId': deviceId, 'newsProfile': outputDict[deviceId].output}
+        if validIdPattern.match(deviceId):
             try:
                 if outputDict[deviceId].existInDB == False:
-                    cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
+                    outputFalse.append((deviceId, outputDict[deviceId].output))
+                    #cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
                 else:
-                    cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
+                    outputTrue.append((deviceId, outputDict[deviceId].output))
+                    #cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
             except Exception as ex:
                 template = "An exception of type {0} occurred. Arguments:\n{1!r}"
                 message = template.format(type(ex).__name__, ex.args)
@@ -65,6 +70,8 @@ def updateNewsProfile(outputDict):
         sys.stdout.write('\r' + 'Executing: %s%%  ' % round((counter/outputLength) * 100, 1))
         sys.stdout.flush()  # important
 
+    cursor.executemany('insert into user_data(device_id, newsProfile) values (%s, %s)', outputFalse)
+    cursor.executemany('update user_data set newsProfile = %s where device_id = %s', outputTrue)
     conn.commit()
     cursor.close()
     conn.close()

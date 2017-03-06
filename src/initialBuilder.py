@@ -79,7 +79,7 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
         reader = csv.reader(f)
         try:
             for row in reader:
-                if validIdPattern.search(row[5]):
+                if validIdPattern.match(row[5]):
                     appActiveSet.add(row[5])
                     if newsDetailPattern.search(row[1]):
                         newsActiveSet.add(row[5])
