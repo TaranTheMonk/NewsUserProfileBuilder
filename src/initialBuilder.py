@@ -77,8 +77,8 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
     with open(os.path.expanduser('~/nestia_logs_with_parameters/data-' + startDate + '.csv')
             , 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
-        try:
-            for row in reader:
+        for row in reader:
+            try:
                 if validIdPattern.search(row[5]):
                     appActiveSet.add(row[5])
                     if newsDetailPattern.search(row[1]):
@@ -86,8 +86,9 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
                         newsInformationCatcher(row, newsIdTypeDict, outputDict)
                 if row[5] not in outputDict.keys():
                     outputDict.update({row[5]: UserProfile(row[5], None)})
-        except:
-            print('file %s, line %d' % (startDate, reader.line_num))
+            except:
+                print('file %s, line %d' % (startDate, reader.line_num))
+                print(reader.__next__())
 
 def main():
     #Global variables
