@@ -118,7 +118,7 @@ def main():
         for deviceId in appActiveSet:
             outputDict[deviceId].appActiveDay += 1
         for deviceId in newsActiveSet:
-            outputDict[deviceId].newActiveDay += 1
+            outputDict[deviceId].newsActiveDay += 1
     print('Process successfully')
 
     #Buidling output
