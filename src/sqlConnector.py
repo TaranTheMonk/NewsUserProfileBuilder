@@ -3,6 +3,7 @@
 #Get news category dictionary from sql database
 
 import mysql.connector
+import sys
 
 def newsDictCatcher():
     output = dict()
@@ -38,6 +39,8 @@ def getCurrentNewsProfile():
     return currentNewsProfile
 
 def updateNewsProfile(outputDict):
+    outputLength = len(outputDict.keys())
+    counter = 0
     conn = mysql.connector.connect(host='hsdb.cd29ypfepkmi.ap-southeast-1.rds.amazonaws.com',
                                user='HSDBADMIN', password='NestiaHSPWD', database='recommend_system')
     cursor = conn.cursor()
@@ -47,6 +50,10 @@ def updateNewsProfile(outputDict):
             cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
         else:
             cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
+        counter += 1
+        sys.stdout.write('\r' + 'Executing: %s%%  ' % round((counter/outputLength) * 100, 1))
+        sys.stdout.flush()  # important
+
     conn.commit()
     cursor.close()
     conn.close()
