@@ -56,12 +56,13 @@ def updateNewsProfile(outputDict):
     for deviceId in outputDict.keys():
         if validIdPattern.match(deviceId):
             try:
+                output = {'deviceId': deviceId, 'newsProfile': outputDict[deviceId]}
                 if outputDict[deviceId].existInDB == False:
-                    outputFalse.append((deviceId, outputDict[deviceId].output))
-                    #cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
+                    #outputFalse.append((deviceId, outputDict[deviceId].output))
+                    cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
                 else:
-                    outputTrue.append((outputDict[deviceId].output, deviceId))
-                    #cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
+                    #outputTrue.append((outputDict[deviceId].output, deviceId))
+                    cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
             except Exception as ex:
                 template = "An exception of type {0} occurred. Arguments:\n{1!r}"
                 message = template.format(type(ex).__name__, ex.args)
@@ -70,8 +71,8 @@ def updateNewsProfile(outputDict):
         sys.stdout.write('\r' + 'Executing: %s%%  ' % round((counter/outputLength) * 100, 1))
         sys.stdout.flush()  # important
 
-    cursor.executemany('insert into user_data(device_id, newsProfile) values (%s, %s)', outputFalse)
-    cursor.executemany('update user_data set newsProfile = %s where device_id = %s', outputTrue)
+    # cursor.executemany('insert into user_data(device_id, newsProfile) values (%s, %s)', outputFalse)
+    # cursor.executemany('update user_data set newsProfile = %s where device_id = %s', outputTrue)
     conn.commit()
     cursor.close()
     conn.close()
