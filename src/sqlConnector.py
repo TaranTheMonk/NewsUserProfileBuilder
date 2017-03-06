@@ -34,7 +34,10 @@ def getCurrentNewsProfile():
     conn.close()
     for idProfilePair in queryResult:
         deviceId = idProfilePair[0].decode('utf-8')
-        Profile = idProfilePair[1].decode('utf-8')
+        try:
+            Profile = idProfilePair[1].decode('utf-8')
+        except:
+            Profile = idProfilePair[1]
         currentNewsProfile.update({deviceId: Profile})
     return currentNewsProfile
 
