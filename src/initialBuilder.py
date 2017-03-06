@@ -84,6 +84,8 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
                     if newsDetailPattern.search(row[1]):
                         newsActiveSet.add(row[5])
                         newsInformationCatcher(row, newsIdTypeDict, outputDict)
+                if row[5] not in outputDict.keys():
+                    outputDict.update({row[5]: UserProfile(row[5], None)})
         except:
             print('file %s, line %d' % (startDate, reader.line_num))
 
