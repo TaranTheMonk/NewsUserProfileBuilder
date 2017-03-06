@@ -79,13 +79,19 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
         reader = csv.reader(f)
         try:
             for row in reader:
-                if validIdPattern.match(row[5]):
-                    appActiveSet.add(row[5])
-                    if newsDetailPattern.search(row[1]):
-                        newsActiveSet.add(row[5])
-                        newsInformationCatcher(row, newsIdTypeDict, outputDict)
-                    if row[5] not in outputDict.keys():
-                        outputDict.update({row[5]: UserProfile(row[5], None)})
+                try:
+                    if validIdPattern.match(row[5]):
+                        appActiveSet.add(row[5])
+                        if newsDetailPattern.search(row[1]):
+                            newsActiveSet.add(row[5])
+                            newsInformationCatcher(row, newsIdTypeDict, outputDict)
+                        if row[5] not in outputDict.keys():
+                            outputDict.update({row[5]: UserProfile(row[5], None)})
+                except Exception as ex:
+                    template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+                    message = template.format(type(ex).__name__, ex.args)
+                    print(message)
+                    print(row)
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             message = template.format(type(ex).__name__, ex.args)
