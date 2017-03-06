@@ -56,7 +56,7 @@ def updateNewsProfile(outputDict):
     for deviceId in outputDict.keys():
         if validIdPattern.match(deviceId):
             try:
-                output = {'deviceId': deviceId, 'newsProfile': outputDict[deviceId]}
+                output = {'deviceId': deviceId, 'newsProfile': outputDict[deviceId].output}
                 if outputDict[deviceId].existInDB == False:
                     #outputFalse.append((deviceId, outputDict[deviceId].output))
                     cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
