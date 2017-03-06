@@ -40,7 +40,7 @@ class UserProfile():
         self.vector += tempVector
 
     def buildOutput(self):
-        output = {'vector': list(self.vector), 'newsActiveDay': self.newsActiveDay, 'appActiveDay': self.appActiveDay}
+        output = {'vector': self.vector.tolist(), 'newsActiveDay': self.newsActiveDay, 'appActiveDay': self.appActiveDay}
         self.output = json.dumps(output)
 
 class ParameterError(Exception):
