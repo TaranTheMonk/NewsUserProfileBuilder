@@ -88,7 +88,7 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
                     outputDict.update({row[5]: UserProfile(row[5], None)})
             except:
                 print('file %s, line %d' % (startDate, reader.line_num))
-                print(reader.__next__())
+                print(reader.__next__().encode('utf-8'))
 
 def main():
     #Global variables
