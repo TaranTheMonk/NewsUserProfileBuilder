@@ -129,7 +129,7 @@ def main():
         outputDict[deviceId].buildOutput()
     print('Output build successfully')
 
-    sqlConnector.updateNewsProfile()
+    sqlConnector.updateNewsProfile(outputDict)
     print('Update successfully')
 
 
