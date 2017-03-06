@@ -46,10 +46,15 @@ def updateNewsProfile(outputDict):
     cursor = conn.cursor()
     for deviceId in outputDict.keys():
         output = {'deviceId': deviceId, 'newsProfile': outputDict[deviceId].output}
-        if outputDict[deviceId].existInDB == False:
-            cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
-        else:
-            cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
+        try:
+            if outputDict[deviceId].existInDB == False:
+                cursor.execute('insert into user_data(device_id, newsProfile) values (%(deviceId)s, %(newsProfile)s)', output)
+            else:
+                cursor.execute('update user_data set newsProfile = %(newsProfile)s where device_id = %(deviceId)s', output)
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            print(message)
         counter += 1
         sys.stdout.write('\r' + 'Executing: %s%%  ' % round((counter/outputLength) * 100, 1))
         sys.stdout.flush()  # important

@@ -77,8 +77,8 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
     with open(os.path.expanduser('~/nestia_logs_with_parameters/data-' + startDate + '.csv')
             , 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
-        for row in reader:
-            try:
+        try:
+            for row in reader:
                 if validIdPattern.search(row[5]):
                     appActiveSet.add(row[5])
                     if newsDetailPattern.search(row[1]):
@@ -86,11 +86,11 @@ def dataProcessor(startDate, newsIdTypeDict, outputDict):
                         newsInformationCatcher(row, newsIdTypeDict, outputDict)
                 if row[5] not in outputDict.keys():
                     outputDict.update({row[5]: UserProfile(row[5], None)})
-            except Exception as ex:
-                template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-                message = template.format(type(ex).__name__, ex.args)
-                print(message)
-                print('file %s, line %d' % (startDate, reader.line_num))
+        except Exception as ex:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            print(message)
+            print('file %s, line %d' % (startDate, reader.line_num))
 
 def main():
     #Global variables
